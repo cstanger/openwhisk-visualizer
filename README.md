@@ -21,7 +21,7 @@
 
 OWVIS is a metaphor-based visualization tool of a Function as a Service architecture deployed on Apache OpenWhisk with the ability to make proposals to further improve a Function as a Service architecture with reference to meet serverless architecture patterns.
 
-![OWVIS Example](./documentation/figures/caching_screenshot.png)
+![OWVIS Example](./docs/figures/caching_screenshot.png)
 
 It uses extracted runtime data form the FaaS Platform and
 
@@ -38,7 +38,7 @@ Try out the [Online demo](http://owvis.cstanger.at).
 
 ### The Architecture
 
-![OWVIS High-Level Architecture](./documentation/figures/ovwisArchitecture_overview.png)
+![OWVIS High-Level Architecture](./docs/figures/ovwisArchitecture_overview.png)
 Depending on how OWVIS is deployd and configured, it can use different endpoints to extract runtime data form OpenWhisk and stores them in a MariaDB instance. `owvis.cc.json` is getting created including multiple metrics per function and is stored so that this file can used by the CodeCharta for visualization.
 
 ## Getting started
@@ -88,7 +88,7 @@ If you click on any of the icons the page will show the detailed view of the sel
 ## Architecture overview
 
 The following architecture diagram pictures the component composition within the Node.JS architecture.
-![OWVISt Architecture](./documentation/figures/ovwisArchitecture.png)
+![OWVISt Architecture](./docs/figures/ovwisArchitecture.png)
 
 ### Deployment Options
 
@@ -126,7 +126,7 @@ When deploying OWVIS within the same Kubernetes cluster, the OpenWhisk Visualize
 The diagram reveals that the two deployment options differ considerably in their performance.
 While the user configuration delivers slightly faster results with a small number of new activation records, the runtime of OWVIS configured as a provider is significantly shorter for many new data records. The break-even point is at around 200 new function calls.
 
-![OWVISt Architecture](./documentation/figures/OWVIS_Benchmark.png)
+![OWVISt Architecture](./docs/figures/OWVIS_Benchmark.png)
 
 By considering the details in the implementation, it can be stated that this almost linear growth (the x axis is visualized in a logarithm scale) of the execution time of a user-configured setup is due to the limitations of the OpenWhisk platform's API. A maximum of only 200 objects can be queried in one request. The number of these API requests therefore increases with the total number of new activation records and consequently the execution time by waiting for all these responses. If there are only a few new data records, an OWVIS caching mechanism takes effect and offers an even faster response time than the alternative variant.
 
