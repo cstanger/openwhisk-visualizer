@@ -1,0 +1,22 @@
+# Default values for owvis.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+owvis:
+  cronjob: '*/10 * * * * *'
+  admin: true
+  benchmark: true
+  openwhisk:
+    releaseName: 'owdev'
+    namespace: 'openwhisk',
+    host: '####YOUR OPENWHISK HOST ADDRESS####'
+    apiKey: '####YOUR OPENWHISK API KEY####'
+    prometheusHost: ''
+    # COUCHDB_HOST: ''
+    # couchDBpw: '####YOUR OPENWHISK COUCHDB PASSWORD####'
+    
+mariaDB:
+  database: 'owvis'
+  password: '5wuRw?%Q6&S8Zydy7b'

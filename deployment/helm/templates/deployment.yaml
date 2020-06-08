@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Release.Name}}
+  namespace: {{ .Release.Namespace | quote}}
+  labels:
+    app: {{.Release.Name}}
+spec:
+  selector:
+    matchLabels:
+      app: {{.Release.Name}}
+      tier: web
+  template:
+    metadata:
+      labels:
+        app: {{.Release.Name}}
+        tier: web
+    spec:
+      containers:
+        - name: {{.Release.Name}}
+          image: cstanger/thesis_owvis:latest
+          imagePullPolicy: Always
+          env:
+            - name: CRONJOB
+              value: {{.Values.owvis.cronjob | quote}}
+            - name: BENCHMARK
+              value: {{.Values.owvis.benchmark | quote}}
+
+        {{ if .Values.owvis.admin }}
+            - name: COUCHDB_HOST
+              value: {{ .Values.owvis.openwhisk.releaseName }}-couchdb.{{ .Values.owvis.openwhisk.namespace }}
+            - name: COUCHDB_PW
+              value: {{ .Values.owvis.openwhisk.couchDBpw }}
+        {{ end }}
+            - name: OPENWHWISK_API_HOST
+              value: {{ .Values.owvis.openwhisk.host }}
+            - name: OPENWHWISK_API_KEY
+              value: {{ .Values.owvis.openwhisk.apiKey }}
+            - name: PROMETHEUS_HOST
+              value: {{ .Values.owvis.openwhisk.prometheusHost }}
+
+            ##internal
+            - name: OWVIS_DB_HOST
+              value: mariadb-service.{{ .Release.Namespace }}
+            - name: OWVIS_DB_USER
+              value: root
+            - name: OWVIS_DB_PW
+              value: {{ .Values.mariaDB.password }}
+            - name: OWVIS_DB_NAME
+              value: {{ .Values.mariaDB.database }}
+
+          volumeMounts:
+            - name: analyse-storage
+              mountPath: /usr/src/app/output
+
+        ##Code Charta
+        - name: codecharta
+          image: cstanger/thesis_codecharta:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+          volumeMounts:
+            - name: analyse-storage
+              mountPath: /usr/share/nginx/html/data
+
+        ##MariaDB Database
+        - name: mariadb
+          image: mariadb
+          ports:
+            - containerPort: 3306
+              name: db-port
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.mariaDB.password }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.mariaDB.database }}
+          volumeMounts:
+            - name: mariadb-vol
+              mountPath: /var/lib/mysql
+
+      volumes:
+        - name: analyse-storage
+          emptyDir: {}
+        - name: mariadb-vol
+          persistentVolumeClaim:
+            claimName: mariadb-pvc

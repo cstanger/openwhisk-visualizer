@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codecharta
+  namespace: openwhisk
+  labels:
+    app: codecharta
+spec:
+  selector:
+    matchLabels:
+      app: codecharta
+      tier: web
+  template:
+    metadata:
+      labels:
+        app: codecharta
+        tier: web
+    spec:
+      containers:
+        ## OWVIS
+        - name: owvis
+          image: cstanger/thesis_owvis:latest
+          imagePullPolicy: Always
+          env:
+            - name: cronJob
+              value: '*/30 * * * * *'
+            - name: owvisDBHost
+              value: mariadb-service.openwhisk
+            - name: owvisDBUser
+              value: root
+            - name: owvisDBpw
+              value: '1234'
+            - name: owvisDBname
+              value: owvis
+            - name: dbhost
+              value: owdev-couchdb.openwhisk
+            - name: dbpw
+              value: ####YOUR OPENWHISK COUCHDB PASSWORD####
+            - name: prometheushost
+              value: owdev-prometheus-server.openwhisk
+            - name: apihost
+              value: owdev-nginx.openwhisk
+            - name: api_key
+              value: ####YOUR OPENWHISK API KEY####
+            - name: asAdmin
+              value: 'true'
+          volumeMounts:
+            - name: analyse-storage
+              mountPath: /usr/src/app/output
+
+        ##Code Charta
+        - name: codecharta
+          image: cstanger/thesis_codecharta:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+          volumeMounts:
+            - name: analyse-storage
+              mountPath: /usr/share/nginx/html/data
+
+        ##MariaDB Database
+        - name: mariadb
+          image: mariadb
+          ports:
+            - containerPort: 3306
+              name: db-port
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: '1234'
+            - name: MYSQL_DATABASE
+              value: owvis
+          volumeMounts:
+            - name: mariadb-vol
+              mountPath: /var/lib/mysql
+
+      volumes:
+        - name: analyse-storage
+          emptyDir: {}
+        - name: mariadb-vol
+          persistentVolumeClaim:
+            claimName: mariadb-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: analyse-pv-claim
+  namespace: openwhisk
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codecharta-service
+  namespace: openwhisk
+  labels:
+    app: codecharta
+spec:
+  selector:
+    app: codecharta
+    tier: web
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-service
+  namespace: openwhisk
+  labels:
+    app: codecharta
+spec:
+  selector:
+    app: codecharta
+    tier: web
+  type: NodePort
+  ports:
+    - port: 3306
+      targetPort: 3306
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-pvc
+  namespace: openwhisk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

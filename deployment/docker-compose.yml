@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+  owvis:
+    build: ../src/
+    volumes:
+      - .:/usr/src/app/output
+    environment:
+      - CRONJOB='*/30 * * * * *'
+      - BENCHMARK=false
+      - OWVIS_DB_HOST=mariaDB
+      - OWVIS_DB_USER=root
+      - OWVIS_DB_PW=1234
+      - OWVIS_DB_NAME=owvis
+      - OPENWHWISK_API_HOST=####YOUR OPENWHISK HOST ADDRESS####
+      - OPENWHWISK_API_KEY=####YOUR OPENWHISK API KEY####
+  codeCharta:
+    image: 'cstanger/thesis_codecharta:latest'
+    ports:
+      - '80:80'
+    volumes:
+      - .:/usr/share/nginx/html/data
+  mariaDB:
+    image: 'mariadb'
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=owvis
