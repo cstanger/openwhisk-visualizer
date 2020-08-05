@@ -22,8 +22,6 @@ OWVIS is a metaphor-based visualization tool of a Function as a Service architec
 
 ![OWVIS Example](./docs/figures/caching_screenshot.png)
 
-It uses extracted runtime data form the FaaS Platform and
-
 The whole application has a modular structure and all the services are packed into docker containersin order to ease its deployment and portability. The application is designed to support multiple configuration and deployment options.
 
 ### The Story
