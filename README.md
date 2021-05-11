@@ -3,7 +3,6 @@
 [![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cstanger/owvis)
 
-> OWVIS - [Online demo](http://owvis.cstanger.at)
 >
 > Made with ❤️ by the cstanger in cooperation with [MaibornWolff ](https://www.maibornwolff.de) DevOps & Cloud Native team and [TUM - Chair of Computer Architecture and Parallel Systems ](https://www.in.tum.de/en/caps/homepage/)
 >
@@ -22,8 +21,6 @@
 OWVIS is a metaphor-based visualization tool of a Function as a Service architecture deployed on Apache OpenWhisk with the ability to make proposals to further improve a Function as a Service architecture with reference to meet serverless architecture patterns.
 
 ![OWVIS Example](./docs/figures/caching_screenshot.png)
-
-It uses extracted runtime data form the FaaS Platform and
 
 The whole application has a modular structure and all the services are packed into docker containersin order to ease its deployment and portability. The application is designed to support multiple configuration and deployment options.
 
