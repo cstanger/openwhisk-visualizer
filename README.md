@@ -43,6 +43,20 @@ Depending on how OWVIS is deployd and configured, it can use different endpoints
 
 ## Getting started
 
+The whole application has a modular structure and all the services are packed into docker containers
+in order to ease its deployment and portability. The application is designed to support multiple configuration and deployment options.
+
+Firstly, the application is capable of running locally as an interactive Node.js process in a terminal. Necessary configurations, such as OpenWhisk credentials or the OpenWhisk host address, need to be set as environment variables.
+
+But as a fully containerized application, \textit{Docker-Compose} is convenient to use in order to start and configure all necessary services. The therefore required docker-compose.yaml file is included in the repository of the OWVIS project.
+
+Thirdly, since Kubernetes is one of the most important deployment options for the OpenWhisk platform, OWVIS is also intended for easy deployment there. A \textit{HELM chart}\footnote{HELM is a package manager for Kubernetes. It allows the definition, installation and update of complex Kubernetes applications and offers template functions to centralize the configuration.
+
+    - \url{https://www.helm.sh}}
+
+, which is available in the repository, allows to deploy and use OWVIS with a single command.
+One advantage of this variant is, that OWVIS offers extended possibilities in case it is started in the same Kubernetes cluster as OpenWhisk itself and has native access to the OpenWhisk backend resources. However, this is only possible if one has the appropriate access rights, which is typically not given as a user but only as a provider of the FaaS platform.
+
 ### Local Installation
 
 In order to run the tool locally, you only need to start up a mariaDB, provide configurations as environment variables and start the node.js process. This can be achieved with the follow steps:
